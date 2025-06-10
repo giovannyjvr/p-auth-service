@@ -25,7 +25,7 @@ public class AuthResource implements AuthController {
     @Override
     public ResponseEntity<SolveOut> solve(TokenOut token) {
         return ResponseEntity.ok().body(
-            authService.solve(token.token())
+            authService.solve(token.getToken())
         );
     }
 

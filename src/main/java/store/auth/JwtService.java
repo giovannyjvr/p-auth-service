@@ -25,13 +25,11 @@ public class JwtService {
     public String create(String id, Date notBefore, Date expiration) {
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
         String jwt = Jwts.builder()
-            .header()
-            .and()
-            .id(id)
-            .issuer(issuer)
+            .setId(id)
+            .setIssuer(issuer)
+            .setNotBefore(notBefore)
+            .setExpiration(expiration)
             .signWith(key)
-            .notBefore(notBefore)
-            .expiration(expiration)
             .compact();
         return jwt;
     }
@@ -52,8 +50,12 @@ public class JwtService {
 
     private Claims resolveClaims(String token) {
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
-        JwtParser parser = Jwts.parser().verifyWith(key).build();
-        return parser.parseSignedClaims(token).getPayload();
+        Claims claims = Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+        return claims;
     }
     
 }
